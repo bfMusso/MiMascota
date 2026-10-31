@@ -1,6 +1,6 @@
 # API del MVP
 
-30 endpoints bajo `/api/v1`, en JSON. Borrador del 31/10/2026, pendiente de revisión (ver *Preguntas abiertas*).
+30 endpoints bajo `/api/v1`, en JSON. Versión acordada el 31/10/2026 (ver *Decisiones*).
 
 ## Convenciones
 
@@ -33,12 +33,12 @@ Códigos: 6 dígitos, 10 minutos, 5 intentos, un solo uso.
 | Método | Ruta | Acceso | Qué hace |
 | --- | --- | --- | --- |
 | GET | `/public/placas/{codigo}` | Público | Estado de la placa y, si está ACTIVA, la ficha pública |
-| POST | `/public/placas/{codigo}/escaneos` | Público | Registra escaneo con `lat`/`lng` y mensaje opcionales. 202 |
+| POST | `/public/placas/{codigo}/escaneos` | Público | Registra escaneo con `lat`/`lng`, `mensaje` (máx. 500) y `contacto` de quien la encontró (máx. 100), todos opcionales. 202 |
 
 Respuesta del GET según estado:
 
 - **SIN_ACTIVAR:** `{ estado }` → la web muestra "Activá tu placa".
-- **ACTIVA con mascota:** nombre, foto, especie, raza, color, `info_medica`, `observaciones`, `perdida` y contacto (nombre y teléfono) solo si `mostrar_contacto`. Nunca email ni dirección.
+- **ACTIVA con mascota:** nombre, especie y `perdida` siempre; el resto (foto, raza, color, sexo, edad, `info_medica`, `observaciones`, contacto del dueño) solo si el dueño lo marcó en `campos_publicos`. Nunca email ni dirección.
 - **ACTIVA sin mascota:** mensaje genérico.
 - **BLOQUEADA o inexistente:** 404 indistinto.
 
@@ -54,7 +54,7 @@ El escaneo avisa al dueño por email: inmediato si está perdida, máximo uno po
 | GET | `/mascotas` | USER | Mis mascotas con sus placas |
 | POST | `/mascotas` | USER | Crea una mascota sin placa |
 | GET | `/mascotas/{id}` | USER | Ficha completa |
-| PATCH | `/mascotas/{id}` | USER | Edita la ficha, incluido `perdida` |
+| PATCH | `/mascotas/{id}` | USER | Edita la ficha, incluidos `perdida` y `campos_publicos` |
 | DELETE | `/mascotas/{id}` | USER (titular) | Borra la mascota; sus placas quedan libres |
 | PUT | `/mascotas/{id}/foto` | USER | Sube foto (JPG/PNG/WebP, máx. 5 MB, se redimensiona a ~800 px) |
 | DELETE | `/mascotas/{id}/foto` | USER | Quita la foto |
@@ -77,13 +77,13 @@ Códigos: 8 caracteres de un alfabeto sin ambiguos (sin 0/O ni 1/I/L), ~6,5 × 1
 
 ## Cambios al modelo de datos
 
-- Tabla nueva `refresh_token` (id, usuario_id, hash, expira, revocado).
-- Campo nuevo `usuario.email_verificado`.
+- Tabla nueva `refresh_token` (id, usuario_id, token_hash, expira, revocado).
+- Campos nuevos: `usuario.email_verificado`, `mascota.campos_publicos`, `escaneo.contacto` y `placa.usuario_id` (la placa queda del dueño aunque se libere de la mascota).
 
-## Preguntas abiertas
+## Decisiones
 
-- [ ] Verificación de email: ¿código de 6 dígitos (propuesto) o link?
-- [ ] ¿Quien escanea puede dejar un mensaje al dueño? (propuesto: sí, opcional, hasta 500 caracteres)
-- [ ] ¿La ficha pública muestra `info_medica` completa o el dueño elige?
-- [ ] ¿Una mascota puede tener más de una placa? (propuesto: sí)
-- [ ] ¿El primer admin se crea por migración o por variable de entorno? (propuesto: variable de entorno)
+- **Verificación de email:** código de 6 dígitos (igual en web y app; mismo mecanismo que el traspaso).
+- **Mensaje de quien escanea:** hasta 500 caracteres, más un contacto opcional de hasta 100.
+- **Ficha pública:** el dueño elige por mascota qué campos se ven (`campos_publicos`). Nombre y especie siempre visibles.
+- **Placas por mascota:** sin límite.
+- **Primer admin:** por variables de entorno `ADMIN_EMAIL` y `ADMIN_PASSWORD`; se crea al arrancar si no existe.

@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: mimascota
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5440/mimascota}
+    username: ${DB_USER:mimascota}
+    password: ${DB_PASSWORD:mimascota}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+server:
+  port: ${SERVER_PORT:8090}
+  forward-headers-strategy: framework
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+mimascota:
+  admin:
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}

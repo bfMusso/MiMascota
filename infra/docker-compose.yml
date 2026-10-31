@@ -1,0 +1,68 @@
+# Entorno de MiMascota. Uso: cd infra && cp .env.example .env && docker compose up -d
+# Todo usa el prefijo "mimascota" (contenedores, red y volúmenes) y puertos propios,
+# para convivir con otros proyectos que corren en la misma máquina.
+name: mimascota
+
+services:
+  db:
+    image: postgres:16
+    container_name: mimascota-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-mimascota}
+      POSTGRES_USER: ${DB_USER:-mimascota}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mimascota}
+    ports:
+      - "127.0.0.1:${DB_PORT:-5440}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-mimascota} -d ${DB_NAME:-mimascota}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [red]
+
+  backend:
+    build: ../backend
+    container_name: mimascota-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-mimascota}
+      DB_USER: ${DB_USER:-mimascota}
+      DB_PASSWORD: ${DB_PASSWORD:-mimascota}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      SERVER_PORT: 8090
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8090}:8090"
+    volumes:
+      - fotos:/data/fotos
+    networks: [red]
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: mimascota-web
+    restart: unless-stopped
+    depends_on: [backend]
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8085}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../frontend/dist:/usr/share/nginx/html:ro
+      - fotos:/data/fotos:ro
+    networks: [red]
+
+# Red propia: Docker le asigna una subred libre, así no pisa las de otros proyectos.
+networks:
+  red:
+    name: mimascota-red
+
+volumes:
+  db-data:
+    name: mimascota-db-data
+  fotos:
+    name: mimascota-fotos

@@ -1,0 +1,25 @@
+# Java / Maven
+backend/target/
+*.class
+*.log
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+
+# IDE y SO
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Datos locales (fotos subidas, volúmenes)
+data/
+uploads/

@@ -26,7 +26,14 @@
 | PATCH | `/me` | USER | Edita nombre, teléfono y `mostrar_contacto` |
 | POST | `/me/cambiar-password` | USER | Password actual + nueva |
 
-Códigos: 6 dígitos, 10 minutos, 5 intentos, un solo uso.
+Códigos: 6 dígitos, 10 minutos, 5 intentos, un solo uso. Pedir uno nuevo invalida el anterior.
+
+Detalles de implementación:
+
+- Sesión: `{ accessToken, tokenType: "Bearer", expiraEn, usuario }`. El refresh va en la cookie `mm_refresh` (httpOnly, SameSite=Strict, path `/api/v1/auth`, 30 días) y rota en cada `/auth/refresh`. Reusar un refresh ya rotado cierra todas las sesiones del usuario.
+- Errores con `codigo`: `validacion`, `email_registrado`, `codigo_invalido`, `email_no_verificado`, `email_ya_verificado`, `credenciales_invalidas`, `sesion_invalida`, `demasiados_envios`, `password_incorrecta`.
+- Cambiar o resetear la contraseña cierra las demás sesiones.
+- En local los emails llegan a Mailpit (http://localhost:8030).
 
 ## Público: placa y escaneo
 

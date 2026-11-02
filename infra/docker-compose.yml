@@ -36,11 +36,31 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-mimascota}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET en infra/.env (al menos 32 caracteres)}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USER: ${MAIL_USER:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-false}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
+      MAIL_FROM: ${MAIL_FROM:-MiMascota <no-reply@mimascota.local>}
       SERVER_PORT: 8090
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8090}:8090"
     volumes:
       - fotos:/data/fotos
+    networks: [red]
+
+  # Bandeja de correo de prueba: atrapa todos los emails que manda el backend en local.
+  # Puertos propios para no chocar con el Mailpit de Agenda.UY (1025/8025).
+  mailpit:
+    image: axllent/mailpit:v1.21
+    container_name: mimascota-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1030}:1025"
+      - "127.0.0.1:${MAILPIT_WEB_PORT:-8030}:8025"
     networks: [red]
 
   web:

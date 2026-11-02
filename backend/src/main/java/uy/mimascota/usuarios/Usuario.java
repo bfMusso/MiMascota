@@ -43,11 +43,16 @@ public class Usuario {
     protected Usuario() {
     }
 
+    public Usuario(String email, String passwordHash, String nombre, String telefono, Rol rol) {
+        this(email, passwordHash, nombre, rol);
+        this.telefono = telefono == null || telefono.isBlank() ? null : telefono.trim();
+    }
+
     public Usuario(String email, String passwordHash, String nombre, Rol rol) {
         this.id = UUID.randomUUID();
         this.email = email.trim().toLowerCase();
         this.passwordHash = passwordHash;
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
         this.rol = rol;
         this.fechaAlta = OffsetDateTime.now();
     }
@@ -90,5 +95,21 @@ public class Usuario {
 
     public void marcarEmailVerificado() {
         this.emailVerificado = true;
+    }
+
+    public void cambiarPassword(String nuevoHash) {
+        this.passwordHash = nuevoHash;
+    }
+
+    public void actualizarPerfil(String nombre, String telefono, Boolean mostrarContacto) {
+        if (nombre != null) {
+            this.nombre = nombre.trim();
+        }
+        if (telefono != null) {
+            this.telefono = telefono.isBlank() ? null : telefono.trim();
+        }
+        if (mostrarContacto != null) {
+            this.mostrarContacto = mostrarContacto;
+        }
     }
 }

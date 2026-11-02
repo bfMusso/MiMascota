@@ -33,8 +33,8 @@ Requisitos: Docker Desktop, y para desarrollar el backend Java 21 y Maven.
 
 ```bash
 cd infra
-cp .env.example .env      # completá DB_PASSWORD, ADMIN_EMAIL y ADMIN_PASSWORD
-docker compose up -d      # base de datos, backend y Nginx
+cp .env.example .env      # completá DB_PASSWORD, JWT_SECRET, ADMIN_EMAIL y ADMIN_PASSWORD
+docker compose up -d      # base de datos, backend, Nginx y Mailpit
 ```
 
 | Servicio | URL en tu máquina |
@@ -42,7 +42,8 @@ docker compose up -d      # base de datos, backend y Nginx
 | Web + API (Nginx) | http://localhost:8085 |
 | Backend directo | http://localhost:8090/actuator/health |
 | PostgreSQL | localhost:5440 |
+| Mailpit (emails de prueba) | http://localhost:8030 |
 
-Los puertos se eligieron para no chocar con otros proyectos (se evitan 80, 3000, 5173, 5432, 8000 y 8080) y se cambian en `infra/.env`. Contenedores, red y volúmenes usan el prefijo `mimascota`.
+Los puertos se eligieron para no chocar con otros proyectos (se evitan 80, 1025, 3000, 5173, 5432-5434, 8000, 8025, 8080 y 8081) y se cambian en `infra/.env`. Contenedores, red y volúmenes usan el prefijo `mimascota`.
 
 Para trabajar solo en el backend: `docker compose up -d db` y después `cd backend && mvn spring-boot:run`. Las pruebas (`mvn test`) usan esa misma base.

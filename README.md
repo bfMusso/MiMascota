@@ -29,7 +29,7 @@ Java + Spring Boot, PostgreSQL y React, desplegado en un VPS con Docker Compose.
 
 ## Cómo levantarlo en local
 
-Requisitos: Docker Desktop, Java 21 y Maven (y Node 22 cuando exista el frontend).
+Requisitos: Docker Desktop y Java 21 (y Node 22 cuando exista el frontend). Maven no hace falta: viene con el proyecto (`backend/mvnw.cmd`).
 
 ### Primera vez
 
@@ -48,7 +48,7 @@ Docker solo corre la base y el correo de prueba; el backend corre en tu máquina
 cd infra
 docker compose up -d          # base de datos y Mailpit
 cd ../backend
-mvn spring-boot:run           # o Run en VS Code sobre MiMascotaApplication
+mvnw.cmd spring-boot:run      # en Linux/Mac: ./mvnw; o Run en VS Code sobre MiMascotaApplication
 ```
 
 El frontend (cuando exista) se levanta con `npm run dev` en `frontend/`, en el puerto 5180.
@@ -74,4 +74,4 @@ docker compose --profile completo up -d --build
 
 Los puertos se eligieron para no chocar con otros proyectos (se evitan 80, 1025, 3000, 5173, 5432-5434, 8000, 8025, 8080 y 8081) y se cambian en `infra/.env`. Contenedores, red y volúmenes usan el prefijo `mimascota`.
 
-Las pruebas (`cd backend && mvn test`) usan la base de Docker, así que tiene que estar levantada.
+Las pruebas (`cd backend && mvnw.cmd test`) usan la base de Docker, así que tiene que estar levantada.

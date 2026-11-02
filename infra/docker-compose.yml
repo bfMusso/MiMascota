@@ -1,4 +1,9 @@
-# Entorno de MiMascota. Uso: cd infra && cp .env.example .env && docker compose up -d
+# Entorno de MiMascota.
+#
+#   Día a día (como en Agenda.UY):  docker compose up -d
+#     -> solo base de datos y Mailpit; el backend se corre desde VS Code.
+#   Todo en Docker (como en el servidor):  docker compose --profile completo up -d --build
+#
 # Todo usa el prefijo "mimascota" (contenedores, red y volúmenes) y puertos propios,
 # para convivir con otros proyectos que corren en la misma máquina.
 name: mimascota
@@ -24,6 +29,7 @@ services:
     networks: [red]
 
   backend:
+    profiles: [completo]
     build: ../backend
     container_name: mimascota-backend
     restart: unless-stopped
@@ -36,7 +42,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-mimascota}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
-      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET en infra/.env (al menos 32 caracteres)}
+      JWT_SECRET: ${JWT_SECRET:-}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
       MAIL_HOST: ${MAIL_HOST:-mailpit}
       MAIL_PORT: ${MAIL_PORT:-1025}
@@ -64,6 +70,7 @@ services:
     networks: [red]
 
   web:
+    profiles: [completo]
     image: nginx:1.27-alpine
     container_name: mimascota-web
     restart: unless-stopped

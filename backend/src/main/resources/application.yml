@@ -1,6 +1,16 @@
 spring:
   application:
     name: mimascota
+  config:
+    # Al correr el backend desde VS Code o con mvn, toma las variables de infra/.env
+    # (el mismo archivo que usa Docker). Dentro del contenedor no existe y se ignora.
+    import:
+      - optional:file:../infra/.env[.properties]
+      - optional:file:./infra/.env[.properties]
+  devtools:
+    # Sin LiveReload: usa el puerto 35729, que puede chocar con el de otros proyectos.
+    livereload:
+      enabled: false
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5440/mimascota}
     username: ${DB_USER:mimascota}

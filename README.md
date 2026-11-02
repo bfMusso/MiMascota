@@ -29,21 +29,49 @@ Java + Spring Boot, PostgreSQL y React, desplegado en un VPS con Docker Compose.
 
 ## Cómo levantarlo en local
 
-Requisitos: Docker Desktop, y para desarrollar el backend Java 21 y Maven.
+Requisitos: Docker Desktop, Java 21 y Maven (y Node 22 cuando exista el frontend).
+
+### Primera vez
 
 ```bash
 cd infra
-cp .env.example .env      # completá DB_PASSWORD, JWT_SECRET, ADMIN_EMAIL y ADMIN_PASSWORD
-docker compose up -d      # base de datos, backend, Nginx y Mailpit
+cp .env.example .env      # en Windows: copy .env.example .env
 ```
+
+Completá en `infra/.env`: `DB_PASSWORD`, `JWT_SECRET` (texto aleatorio de 32+ caracteres), `ADMIN_EMAIL` y `ADMIN_PASSWORD`. El backend lee este mismo archivo, tanto en Docker como corriendo desde VS Code.
+
+### Día a día (modo desarrollo)
+
+Docker solo corre la base y el correo de prueba; el backend corre en tu máquina y se reinicia solo al guardar cambios.
+
+```bash
+cd infra
+docker compose up -d          # base de datos y Mailpit
+cd ../backend
+mvn spring-boot:run           # o Run en VS Code sobre MiMascotaApplication
+```
+
+El frontend (cuando exista) se levanta con `npm run dev` en `frontend/`, en el puerto 5180.
+
+### Todo en Docker (como en el servidor)
+
+Para probar el conjunto antes de desplegar. Cada cambio de código requiere repetir el comando.
+
+```bash
+cd infra
+docker compose --profile completo up -d --build
+```
+
+### URLs y puertos
 
 | Servicio | URL en tu máquina |
 | --- | --- |
-| Web + API (Nginx) | http://localhost:8085 |
-| Backend directo | http://localhost:8090/actuator/health |
-| PostgreSQL | localhost:5440 |
+| Backend | http://localhost:8090/actuator/health |
+| Web + API vía Nginx (solo modo completo) | http://localhost:8085 |
+| Frontend en desarrollo (próximamente) | http://localhost:5180 |
 | Mailpit (emails de prueba) | http://localhost:8030 |
+| PostgreSQL | localhost:5440 |
 
 Los puertos se eligieron para no chocar con otros proyectos (se evitan 80, 1025, 3000, 5173, 5432-5434, 8000, 8025, 8080 y 8081) y se cambian en `infra/.env`. Contenedores, red y volúmenes usan el prefijo `mimascota`.
 
-Para trabajar solo en el backend: `docker compose up -d db` y después `cd backend && mvn spring-boot:run`. Las pruebas (`mvn test`) usan esa misma base.
+Las pruebas (`cd backend && mvn test`) usan la base de Docker, así que tiene que estar levantada.

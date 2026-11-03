@@ -69,9 +69,10 @@ services:
       - "127.0.0.1:${MAILPIT_WEB_PORT:-8030}:8025"
     networks: [red]
 
+  # Frontend compilado y servido por Nginx, que además pasa /api al backend.
   web:
     profiles: [completo]
-    image: nginx:1.27-alpine
+    build: ../frontend
     container_name: mimascota-web
     restart: unless-stopped
     depends_on: [backend]
@@ -79,7 +80,6 @@ services:
       - "127.0.0.1:${WEB_PORT:-8085}:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ../frontend/dist:/usr/share/nginx/html:ro
       - fotos:/data/fotos:ro
     networks: [red]
 

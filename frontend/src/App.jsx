@@ -1,0 +1,42 @@
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { useSesion } from './sesion.jsx'
+import Inicio from './paginas/Inicio.jsx'
+import Registro from './paginas/Registro.jsx'
+import Verificar from './paginas/Verificar.jsx'
+import Ingresar from './paginas/Ingresar.jsx'
+import Olvide from './paginas/Olvide.jsx'
+import Restablecer from './paginas/Restablecer.jsx'
+import MiCuenta from './paginas/MiCuenta.jsx'
+import Cargando from './componentes/Cargando.jsx'
+
+/** Solo con sesión; si no, manda a ingresar y vuelve después. */
+function ConSesion({ children }) {
+  const { usuario, cargando } = useSesion()
+  const location = useLocation()
+  if (cargando) return <Cargando />
+  if (!usuario) return <Navigate to="/ingresar" replace state={{ volverA: location.pathname }} />
+  return children
+}
+
+/** Pantallas de cuenta: si ya entró, lo lleva a su cuenta. */
+function SinSesion({ children }) {
+  const { usuario, cargando } = useSesion()
+  if (cargando) return <Cargando />
+  if (usuario) return <Navigate to="/app" replace />
+  return children
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Inicio />} />
+      <Route path="/registro" element={<SinSesion><Registro /></SinSesion>} />
+      <Route path="/verificar" element={<SinSesion><Verificar /></SinSesion>} />
+      <Route path="/ingresar" element={<SinSesion><Ingresar /></SinSesion>} />
+      <Route path="/olvide" element={<SinSesion><Olvide /></SinSesion>} />
+      <Route path="/restablecer" element={<SinSesion><Restablecer /></SinSesion>} />
+      <Route path="/app" element={<ConSesion><MiCuenta /></ConSesion>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}

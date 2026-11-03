@@ -29,7 +29,7 @@ Java + Spring Boot, PostgreSQL y React, desplegado en un VPS con Docker Compose.
 
 ## Cómo levantarlo en local
 
-Requisitos: Docker Desktop y Java 21 (y Node 22 cuando exista el frontend). Maven no hace falta: viene con el proyecto (`backend/mvnw.cmd`).
+Requisitos: Docker Desktop, Java 21 y Node 22. Maven no hace falta: viene con el proyecto (`backend/mvnw.cmd`).
 
 ### Primera vez
 
@@ -39,6 +39,13 @@ cp .env.example .env      # en Windows: copy .env.example .env
 ```
 
 Completá en `infra/.env`: `DB_PASSWORD`, `JWT_SECRET` (texto aleatorio de 32+ caracteres), `ADMIN_EMAIL` y `ADMIN_PASSWORD`. El backend lee este mismo archivo, tanto en Docker como corriendo desde VS Code.
+
+Y una sola vez, para bajar las librerías del frontend:
+
+```bash
+cd frontend
+npm install
+```
 
 ### Día a día (modo desarrollo)
 
@@ -51,7 +58,14 @@ cd ../backend
 mvnw.cmd spring-boot:run      # en Linux/Mac: ./mvnw; o Run en VS Code sobre MiMascotaApplication
 ```
 
-El frontend (cuando exista) se levanta con `npm run dev` en `frontend/`, en el puerto 5180.
+En otra terminal, el frontend (se actualiza solo en el navegador al guardar):
+
+```bash
+cd frontend
+npm run dev                   # http://localhost:5180
+```
+
+El frontend manda las llamadas a `/api` al backend del puerto 8090, así que tienen que estar los dos corriendo. Si alguien agrega librerías al frontend, repetí `npm install`.
 
 ### Todo en Docker (como en el servidor)
 
@@ -68,7 +82,7 @@ docker compose --profile completo up -d --build
 | --- | --- |
 | Backend | http://localhost:8090/actuator/health |
 | Web + API vía Nginx (solo modo completo) | http://localhost:8085 |
-| Frontend en desarrollo (próximamente) | http://localhost:5180 |
+| Frontend en desarrollo | http://localhost:5180 |
 | Mailpit (emails de prueba) | http://localhost:8030 |
 | PostgreSQL | localhost:5440 |
 

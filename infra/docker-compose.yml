@@ -52,6 +52,8 @@ services:
       MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
       MAIL_FROM: ${MAIL_FROM:-MiMascota <no-reply@mimascota.local>}
       SERVER_PORT: 8090
+      FOTOS_DIR: /data/fotos
+      WEB_URL: ${WEB_URL:-http://localhost:8085}
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8090}:8090"
     volumes:

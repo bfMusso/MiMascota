@@ -60,3 +60,9 @@ mimascota:
   admin:
     email: ${ADMIN_EMAIL:}
     password: ${ADMIN_PASSWORD:}
+  # Carpeta donde se guardan las fotos de las mascotas (en Docker, el volumen /data/fotos).
+  fotos:
+    carpeta: ${FOTOS_DIR:./data/fotos}
+  # Dirección pública de la web: se usa para armar la URL de cada placa (QR y NFC).
+  web:
+    url: ${WEB_URL:http://localhost:5180}

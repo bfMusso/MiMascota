@@ -7,6 +7,11 @@ import Ingresar from './paginas/Ingresar.jsx'
 import Olvide from './paginas/Olvide.jsx'
 import Restablecer from './paginas/Restablecer.jsx'
 import MiCuenta from './paginas/MiCuenta.jsx'
+import MisMascotas from './paginas/MisMascotas.jsx'
+import MascotaNueva from './paginas/MascotaNueva.jsx'
+import MascotaFicha from './paginas/MascotaFicha.jsx'
+import ActivarPlaca from './paginas/ActivarPlaca.jsx'
+import Admin from './paginas/Admin.jsx'
 import Cargando from './componentes/Cargando.jsx'
 
 /** Solo con sesión; si no, manda a ingresar y vuelve después. */
@@ -15,6 +20,13 @@ function ConSesion({ children }) {
   const location = useLocation()
   if (cargando) return <Cargando />
   if (!usuario) return <Navigate to="/ingresar" replace state={{ volverA: location.pathname }} />
+  return children
+}
+
+/** Solo para administradores. */
+function SoloAdmin({ children }) {
+  const { usuario } = useSesion()
+  if (usuario?.rol !== 'ADMIN') return <Navigate to="/app" replace />
   return children
 }
 
@@ -35,7 +47,12 @@ export default function App() {
       <Route path="/ingresar" element={<SinSesion><Ingresar /></SinSesion>} />
       <Route path="/olvide" element={<SinSesion><Olvide /></SinSesion>} />
       <Route path="/restablecer" element={<SinSesion><Restablecer /></SinSesion>} />
-      <Route path="/app" element={<ConSesion><MiCuenta /></ConSesion>} />
+      <Route path="/app" element={<ConSesion><MisMascotas /></ConSesion>} />
+      <Route path="/app/mascotas/nueva" element={<ConSesion><MascotaNueva /></ConSesion>} />
+      <Route path="/app/mascotas/:id" element={<ConSesion><MascotaFicha /></ConSesion>} />
+      <Route path="/app/activar" element={<ConSesion><ActivarPlaca /></ConSesion>} />
+      <Route path="/app/cuenta" element={<ConSesion><MiCuenta /></ConSesion>} />
+      <Route path="/app/admin" element={<ConSesion><SoloAdmin><Admin /></SoloAdmin></ConSesion>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

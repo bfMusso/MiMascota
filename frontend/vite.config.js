@@ -11,6 +11,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': 'http://localhost:8090',
+      '/fotos': 'http://localhost:8090',
     },
   },
 })

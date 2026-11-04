@@ -35,7 +35,6 @@ function Perfil() {
     <form className="tarjeta" onSubmit={enviar}>
       <div className="encabezado">
         <h2>Tus datos</h2>
-        <p className="suave">{usuario.email}</p>
       </div>
       <Aviso tipo="error">{f.error?.message}</Aviso>
       <Aviso tipo="ok">{guardado && 'Guardamos tus datos.'}</Aviso>
@@ -111,8 +110,8 @@ export default function MiCuenta() {
   return (
     <Marco ancho>
       <div className="encabezado">
-        <h1>Hola, {usuario.nombre.split(' ')[0]}</h1>
-        <p className="suave">Pronto vas a poder activar tus placas y cargar a tus mascotas desde acá.</p>
+        <h1>Mi cuenta</h1>
+        <p className="suave">{usuario.email}</p>
       </div>
       <Perfil />
       <CambiarPassword />

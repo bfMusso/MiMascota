@@ -22,9 +22,10 @@ export class ApiError extends Error {
   }
 }
 
-async function pedir(metodo, ruta, cuerpo, { conToken = true } = {}) {
+async function pedir(metodo, ruta, cuerpo, { conToken = true, archivo = false } = {}) {
   const headers = {}
-  if (cuerpo !== undefined) headers['Content-Type'] = 'application/json'
+  const esForm = cuerpo instanceof FormData
+  if (cuerpo !== undefined && !esForm) headers['Content-Type'] = 'application/json'
   if (conToken && accessToken) headers.Authorization = `Bearer ${accessToken}`
 
   let res
@@ -32,7 +33,7 @@ async function pedir(metodo, ruta, cuerpo, { conToken = true } = {}) {
     res = await fetch(`/api/v1${ruta}`, {
       method: metodo,
       headers,
-      body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+      body: cuerpo === undefined || esForm ? cuerpo : JSON.stringify(cuerpo),
       credentials: 'same-origin',
     })
   } catch {
@@ -40,6 +41,7 @@ async function pedir(metodo, ruta, cuerpo, { conToken = true } = {}) {
   }
 
   if (res.status === 204) return null
+  if (archivo && res.ok) return res.blob()
   const texto = await res.text()
   const datos = texto ? JSON.parse(texto) : null
   if (!res.ok) throw new ApiError(res.status, datos)
@@ -62,9 +64,9 @@ export function refrescar() {
 }
 
 /** Llamada autenticada: si el token venció, refresca una vez y reintenta. */
-async function conSesion(metodo, ruta, cuerpo) {
+async function conSesion(metodo, ruta, cuerpo, opciones) {
   try {
-    return await pedir(metodo, ruta, cuerpo)
+    return await pedir(metodo, ruta, cuerpo, opciones)
   } catch (e) {
     if (e.status !== 401) throw e
     try {
@@ -74,7 +76,7 @@ async function conSesion(metodo, ruta, cuerpo) {
       alCerrarSesion()
       throw e
     }
-    return pedir(metodo, ruta, cuerpo)
+    return pedir(metodo, ruta, cuerpo, opciones)
   }
 }
 
@@ -93,4 +95,30 @@ export const me = {
   ver: () => conSesion('GET', '/me'),
   actualizar: (datos) => conSesion('PATCH', '/me', datos),
   cambiarPassword: (actual, nueva) => conSesion('POST', '/me/cambiar-password', { actual, nueva }),
+}
+
+export const mascotas = {
+  listar: () => conSesion('GET', '/mascotas'),
+  ver: (id) => conSesion('GET', `/mascotas/${id}`),
+  crear: (datos) => conSesion('POST', '/mascotas', datos),
+  actualizar: (id, datos) => conSesion('PATCH', `/mascotas/${id}`, datos),
+  borrar: (id) => conSesion('DELETE', `/mascotas/${id}`),
+  subirFoto: (id, archivo) => {
+    const form = new FormData()
+    form.append('foto', archivo)
+    return conSesion('PUT', `/mascotas/${id}/foto`, form)
+  },
+  quitarFoto: (id) => conSesion('DELETE', `/mascotas/${id}/foto`),
+}
+
+export const placas = {
+  mias: () => conSesion('GET', '/placas'),
+  activar: (codigo, datos) => conSesion('POST', `/placas/${encodeURIComponent(codigo)}/activar`, datos),
+  asignar: (codigo, mascotaId) => conSesion('PUT', `/placas/${encodeURIComponent(codigo)}/mascota`, { mascotaId }),
+}
+
+export const admin = {
+  lotes: () => conSesion('GET', '/admin/lotes'),
+  crearLote: (cantidad, nombre) => conSesion('POST', '/admin/lotes', { cantidad, nombre: nombre || null }),
+  exportarLote: (lote) => conSesion('GET', `/admin/lotes/${encodeURIComponent(lote)}/export`, undefined, { archivo: true }),
 }

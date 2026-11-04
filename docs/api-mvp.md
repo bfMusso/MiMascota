@@ -67,7 +67,15 @@ El escaneo avisa al dueño por email: inmediato si está perdida, máximo uno po
 | DELETE | `/mascotas/{id}/foto` | USER | Quita la foto |
 | GET | `/mascotas/{id}/escaneos` | USER | Historial paginado con ubicación exacta |
 
-Fotos servidas por Nginx en `/fotos/{archivo}`. Acceso a recursos ajenos → 404.
+Fotos servidas por Nginx en `/fotos/{archivo}` (en modo desarrollo las sirve el backend). Acceso a recursos ajenos → 404.
+
+Detalles de implementación (PR 06):
+
+- `especie`: `PERRO`, `GATO` u `OTRO`. `sexo`: `MACHO` o `HEMBRA`. `campos_publicos`: `FOTO`, `RAZA`, `COLOR`, `SEXO`, `EDAD`, `INFO_MEDICA`, `OBSERVACIONES`, `CONTACTO`.
+- `PATCH /mascotas/{id}` recibe la ficha completa: un campo opcional vacío se borra; `perdida` y `camposPublicos` en null quedan como estaban.
+- Activar: `{ "mascotaId": "…" }` o `{ "mascota": { ficha nueva } }`, uno de los dos. Errores: `placa_no_encontrada` (404, también si está bloqueada), `placa_ya_activa` (409).
+- Foto: campo `foto` en multipart. Se guarda en JPG de 800 px de lado máximo. Error `foto_invalida`.
+- El historial de escaneos llega con la página pública (PR siguiente).
 
 ## Admin: lotes de placas
 
@@ -80,7 +88,9 @@ Fotos servidas por Nginx en `/fotos/{archivo}`. Acceso a recursos ajenos → 404
 | GET | `/admin/placas/{codigo}` | ADMIN | Detalle con dueño y mascota |
 | PATCH | `/admin/placas/{codigo}` | ADMIN | Cambia estado (ej. BLOQUEADA) |
 
-Códigos: 8 caracteres de un alfabeto sin ambiguos (sin 0/O ni 1/I/L), ~6,5 × 10^11 combinaciones.
+Códigos: 8 caracteres de un alfabeto sin ambiguos (sin 0/O ni 1/I/L), 31^8 ≈ 8,5 × 10^11 combinaciones. Al activar se acepta en minúsculas y con espacios o guiones.
+
+Hechos (PR 06): generar lote (`nombre` opcional; si falta, `LOTE-fecha-hora`), listado con conteos y export CSV (`codigo,url,estado`, con la URL armada desde `WEB_URL`). Faltan: placas del lote, detalle y bloqueo de una placa.
 
 ## Cambios al modelo de datos
 

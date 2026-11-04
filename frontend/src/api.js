@@ -109,6 +109,13 @@ export const mascotas = {
     return conSesion('PUT', `/mascotas/${id}/foto`, form)
   },
   quitarFoto: (id) => conSesion('DELETE', `/mascotas/${id}/foto`),
+  escaneos: (id, page = 0, size = 10) => conSesion('GET', `/mascotas/${id}/escaneos?page=${page}&size=${size}`),
+}
+
+export const publico = {
+  ver: (codigo) => pedir('GET', `/public/placas/${encodeURIComponent(codigo)}`, undefined, { conToken: false }),
+  escanear: (codigo, datos = {}) =>
+    pedir('POST', `/public/placas/${encodeURIComponent(codigo)}/escaneos`, datos, { conToken: false }),
 }
 
 export const placas = {

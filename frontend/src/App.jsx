@@ -12,6 +12,7 @@ import MascotaNueva from './paginas/MascotaNueva.jsx'
 import MascotaFicha from './paginas/MascotaFicha.jsx'
 import ActivarPlaca from './paginas/ActivarPlaca.jsx'
 import Admin from './paginas/Admin.jsx'
+import PlacaPublica from './paginas/PlacaPublica.jsx'
 import Cargando from './componentes/Cargando.jsx'
 
 /** Solo con sesión; si no, manda a ingresar y vuelve después. */
@@ -19,7 +20,7 @@ function ConSesion({ children }) {
   const { usuario, cargando } = useSesion()
   const location = useLocation()
   if (cargando) return <Cargando />
-  if (!usuario) return <Navigate to="/ingresar" replace state={{ volverA: location.pathname }} />
+  if (!usuario) return <Navigate to="/ingresar" replace state={{ volverA: location.pathname + location.search }} />
   return children
 }
 
@@ -42,6 +43,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Inicio />} />
+      <Route path="/p/:codigo" element={<PlacaPublica />} />
       <Route path="/registro" element={<SinSesion><Registro /></SinSesion>} />
       <Route path="/verificar" element={<SinSesion><Verificar /></SinSesion>} />
       <Route path="/ingresar" element={<SinSesion><Ingresar /></SinSesion>} />

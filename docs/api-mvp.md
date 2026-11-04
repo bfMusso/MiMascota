@@ -51,6 +51,15 @@ Respuesta del GET según estado:
 
 El escaneo avisa al dueño por email: inmediato si está perdida, máximo uno por hora por placa si no. Rate limit por IP en ambos endpoints.
 
+Detalles de implementación (PR 07):
+
+- La web registra un escaneo sin datos al abrir la ficha (una vez por pestaña) y otro cuando quien la encontró manda el formulario.
+- Email al dueño: siempre si la mascota está perdida o si el escaneo trae mensaje o contacto; si no, como máximo uno por hora por placa (columna `escaneo.notificado`, migración V3). Incluye mensaje, contacto y link a Google Maps si compartió la ubicación.
+- Ficha pública: solo trae los campos marcados en `campos_publicos`. `EDAD` se manda como `edadMeses` (nunca la fecha). `SEXO` incluye `castrada`. `CONTACTO` muestra el primer nombre y el teléfono del titular, si cargó teléfono.
+- Límite por IP (en memoria): ver ficha 60/min; escanear 20/hora y 5 cada 10 minutos por placa. Error `demasiadas_solicitudes` (429). Detrás de Nginx la IP viene en `X-Real-IP`.
+- `GET /mascotas/{id}/escaneos` muestra los escaneos de las placas asignadas hoy a la mascota.
+- El checkbox de "mostrar contacto" del perfil ya no se usa: se decide por mascota con `CONTACTO`.
+
 ## Dueño: placas y mascotas
 
 | Método | Ruta | Acceso | Qué hace |

@@ -804,3 +804,78 @@ a:hover {
 .ficha-codigo.bloqueada {
   opacity: 0.55;
 }
+
+/* --- Página pública de la placa --- */
+
+.ficha-publica {
+  align-items: center;
+  text-align: center;
+}
+
+.ficha-publica h1 {
+  font-size: 2rem;
+}
+
+.aviso-perdida {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radio-grande);
+  background: var(--alerta-fondo);
+  color: var(--alerta-texto);
+  border: 1.5px solid var(--alerta-texto);
+}
+
+.aviso-perdida b {
+  font-size: 1.1rem;
+}
+
+.icono-grande {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--lila-suave);
+  display: grid;
+  place-items: center;
+}
+
+.icono-grande svg {
+  width: 36px;
+  height: 36px;
+  fill: var(--principal);
+}
+
+.telefono {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  user-select: all;
+}
+
+.ubicacion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+/* --- Escaneos en la ficha --- */
+
+.escaneo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--linea);
+}
+
+.escaneo:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.escaneo .mensaje {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

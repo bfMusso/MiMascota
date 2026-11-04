@@ -8,7 +8,7 @@ import FormMascota, { datosMascota } from '../componentes/FormMascota.jsx'
 import { useCarga } from '../componentes/useCarga.js'
 import { useFormulario } from '../componentes/useFormulario.js'
 import { mascotas, placas } from '../api.js'
-import { CAMPOS_PUBLICOS, ESPECIES, aRequest, castradaTexto, codigoLegible, edad } from '../textos.js'
+import { CAMPOS_PUBLICOS, ESPECIES, aRequest, castradaTexto, codigoLegible, edad, fechaHora, mapa } from '../textos.js'
 
 function Cabecera({ m, setM }) {
   const input = useRef(null)
@@ -221,6 +221,61 @@ function Placas({ m, recargar }) {
   )
 }
 
+function Escaneos({ m }) {
+  const [paginas, setPaginas] = useState(1)
+  const carga = useCarga(() => mascotas.escaneos(m.id, 0, paginas * 10), [m.id, paginas])
+  const datos = carga.datos
+
+  return (
+    <div className="tarjeta">
+      <div className="encabezado">
+        <h2>Escaneos</h2>
+        <p className="suave">Cada vez que alguien abre la ficha de {m.nombre} o te deja un mensaje.</p>
+      </div>
+      <Aviso tipo="error">{carga.error?.message}</Aviso>
+      {!datos ? (
+        <Cargando />
+      ) : datos.totalElements === 0 ? (
+        <p className="suave">Todavía nadie escaneó sus placas.</p>
+      ) : (
+        <>
+          <div>
+            {datos.content.map((e) => (
+              <div className="escaneo" key={e.id}>
+                <div className="fila entre">
+                  <b>{fechaHora(e.fecha)}</b>
+                  <span className="suave">Placa {codigoLegible(e.placa)}</span>
+                </div>
+                {e.mensaje ? <p className="mensaje">“{e.mensaje}”</p> : <p className="suave">Abrieron la ficha.</p>}
+                <div className="fila">
+                  {e.contacto && (
+                    <span>
+                      <span className="suave">Contacto:</span> <b>{e.contacto}</b>
+                    </span>
+                  )}
+                  {e.lat != null && (
+                    <a href={mapa(e.lat, e.lng)} target="_blank" rel="noreferrer">
+                      Ver en el mapa
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          {datos.content.length < datos.totalElements && (
+            <div className="fila">
+              <button type="button" className="boton texto chico" disabled={carga.cargando}
+                onClick={() => setPaginas(paginas + 1)}>
+                Ver más
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
 function Borrar({ m }) {
   const navigate = useNavigate()
   const [confirmando, setConfirmando] = useState(false)
@@ -285,6 +340,7 @@ export default function MascotaFicha() {
           <Aviso tipo="ok">{location.state?.aviso}</Aviso>
           <Cabecera m={m} setM={carga.setDatos} />
           <ModoPerdida m={m} setM={carga.setDatos} />
+          <Escaneos m={m} />
           <Placas m={m} recargar={carga.recargar} />
           <FichaPublica m={m} setM={carga.setDatos} />
           <Datos key={m.id} m={m} setM={carga.setDatos} />

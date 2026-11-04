@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Marco from '../componentes/Marco.jsx'
 import Campo from '../componentes/Campo.jsx'
 import Aviso from '../componentes/Aviso.jsx'
@@ -7,13 +7,14 @@ import { auth } from '../api.js'
 
 export default function Registro() {
   const navigate = useNavigate()
+  const location = useLocation()
   const f = useFormulario({ nombre: '', email: '', telefono: '', password: '' })
 
   const enviar = async (e) => {
     e.preventDefault()
     const { nombre, email, telefono, password } = f.valores
     const ok = await f.enviar(() => auth.registro({ nombre, email, telefono: telefono || null, password }))
-    if (ok) navigate(`/verificar?email=${encodeURIComponent(ok.email)}`)
+    if (ok) navigate(`/verificar?email=${encodeURIComponent(ok.email)}`, { state: location.state })
   }
 
   return (

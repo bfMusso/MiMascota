@@ -54,7 +54,10 @@ export default function Ingresar() {
         </Link>
       </div>
       <p className="pie">
-        ¿No tenés cuenta? <Link to="/registro">Creala acá</Link>
+        ¿No tenés cuenta?{' '}
+        <Link to="/registro" state={location.state}>
+          Creala acá
+        </Link>
       </p>
     </Marco>
   )

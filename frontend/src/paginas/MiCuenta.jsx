@@ -12,7 +12,6 @@ function Perfil() {
   const f = useFormulario({
     nombre: usuario.nombre || '',
     telefono: usuario.telefono || '',
-    mostrarContacto: usuario.mostrarContacto,
   })
 
   const enviar = async (e) => {
@@ -22,7 +21,6 @@ function Perfil() {
       me.actualizar({
         nombre: f.valores.nombre,
         telefono: f.valores.telefono,
-        mostrarContacto: f.valores.mostrarContacto,
       }),
     )
     if (u) {
@@ -42,15 +40,10 @@ function Perfil() {
         value={f.valores.nombre} onChange={f.cambiar} error={f.campos.nombre} />
       <Campo id="telefono" etiqueta="Teléfono" type="tel" autoComplete="tel" maxLength={30}
         value={f.valores.telefono} onChange={f.cambiar} error={f.campos.telefono} />
-      <label className="check" htmlFor="mostrarContacto">
-        <input id="mostrarContacto" name="mostrarContacto" type="checkbox"
-          checked={f.valores.mostrarContacto} onChange={f.cambiar} />
-        <span>
-          Mostrar mi teléfono a quien encuentre a mi mascota
-          <br />
-          <span className="suave">Si no, solo te pueden dejar un mensaje desde la ficha.</span>
-        </span>
-      </label>
+      <p className="suave">
+        Tu teléfono se muestra al escanear la placa solo en las mascotas donde marques “Tu teléfono”. Tu email nunca
+        se muestra.
+      </p>
       <div className="fila">
         <button className="boton" disabled={f.enviando}>
           {f.enviando ? 'Guardando…' : 'Guardar'}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Marco from '../componentes/Marco.jsx'
 import Campo from '../componentes/Campo.jsx'
 import Aviso from '../componentes/Aviso.jsx'
@@ -10,6 +10,7 @@ import { useSesion } from '../sesion.jsx'
 export default function Verificar() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { iniciar } = useSesion()
   const f = useFormulario({ email: params.get('email') || '', codigo: '' })
   const [reenvio, setReenvio] = useState({ estado: null, texto: '' })
@@ -19,7 +20,7 @@ export default function Verificar() {
     const sesion = await f.enviar(() => auth.verificarEmail(f.valores.email, f.valores.codigo))
     if (sesion) {
       iniciar(sesion)
-      navigate('/app', { replace: true })
+      navigate(location.state?.volverA || '/app', { replace: true })
     }
   }
 

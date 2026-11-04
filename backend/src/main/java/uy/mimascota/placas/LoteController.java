@@ -60,10 +60,9 @@ public class LoteController {
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     public LoteCreado crear(@Valid @RequestBody NuevoLoteRequest req) {
-        String lote = req.nombre() == null || req.nombre().isBlank()
-                ? "LOTE-" + LocalDateTime.now().format(NOMBRE_AUTO)
-                : req.nombre().trim();
-        if (placas.existsByLote(lote)) {
+        boolean automatico = req.nombre() == null || req.nombre().isBlank();
+        String lote = automatico ? nombreAutomatico() : req.nombre().trim();
+        if (!automatico && placas.existsByLote(lote)) {
             throw new ApiException(HttpStatus.CONFLICT, "lote_existente", "Ya hay un lote con ese nombre");
         }
         Set<String> nuevos = new HashSet<>();
@@ -120,6 +119,16 @@ public class LoteController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + lote + ".csv\"")
                 .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
                 .body(csv.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** LOTE-fecha-hora; si ya hay uno creado en el mismo segundo, le agrega -2, -3... */
+    private String nombreAutomatico() {
+        String base = "LOTE-" + LocalDateTime.now().format(NOMBRE_AUTO);
+        String nombre = base;
+        for (int i = 2; placas.existsByLote(nombre); i++) {
+            nombre = base + "-" + i;
+        }
+        return nombre;
     }
 
     private List<Placa> delLote(String lote) {

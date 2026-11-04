@@ -35,6 +35,27 @@ export function edad(fecha) {
   return anios === 1 ? '1 año' : `${anios} años`
 }
 
+/** "3 años", "8 meses" a partir de la edad en meses. */
+export function edadDesdeMeses(meses) {
+  if (meses == null) return ''
+  if (meses < 1) return 'Menos de un mes'
+  if (meses < 12) return meses === 1 ? '1 mes' : `${meses} meses`
+  const anios = Math.floor(meses / 12)
+  return anios === 1 ? '1 año' : `${anios} años`
+}
+
+/** "4/11 a las 17:05" */
+export function fechaHora(iso) {
+  const d = new Date(iso)
+  const dia = d.toLocaleDateString('es-UY', { day: 'numeric', month: 'numeric', year: '2-digit' })
+  const hora = d.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' })
+  return `${dia} a las ${hora}`
+}
+
+export function mapa(lat, lng) {
+  return `https://www.google.com/maps?q=${lat},${lng}`
+}
+
 /** Muestra el código de placa en dos bloques para leerlo mejor: ABCD 2345. */
 export function codigoLegible(codigo) {
   return codigo.length === 8 ? `${codigo.slice(0, 4)} ${codigo.slice(4)}` : codigo

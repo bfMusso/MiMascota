@@ -59,11 +59,12 @@ class PlacasYMascotasTests {
         String id = m.get("id").asText();
 
         con(patch("/api/v1/mascotas/" + id), ana, """
-                {"nombre":"Toby","especie":"PERRO","raza":"","color":"Negro","perdida":true,
+                {"nombre":"Toby","especie":"PERRO","raza":"","color":"Negro","perdida":true,"castrada":true,
                  "camposPublicos":["FOTO","CONTACTO"],"fechaNacimiento":"2020-05-01"}""")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.raza").doesNotExist())
                 .andExpect(jsonPath("$.color").value("Negro"))
+                .andExpect(jsonPath("$.castrada").value(true))
                 .andExpect(jsonPath("$.perdida").value(true))
                 .andExpect(jsonPath("$.camposPublicos.length()").value(2));
 
@@ -164,7 +165,21 @@ class PlacasYMascotasTests {
                 .andExpect(header().string("Content-Disposition", "attachment; filename=\"" + nombre + ".csv\""))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("/p/")));
 
+        con(get("/api/v1/admin/lotes/" + nombre + "/placas"), admin, null)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].estado").value("SIN_ACTIVAR"))
+                .andExpect(jsonPath("$[0].url").value(org.hamcrest.Matchers.containsString("/p/")));
+
+        byte[] pdf = con(get("/api/v1/admin/lotes/" + nombre + "/export.pdf"), admin, null)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+                .andReturn().getResponse().getContentAsByteArray();
+        assertThat(new String(pdf, 0, 5)).isEqualTo("%PDF-");
+        con(get("/api/v1/admin/lotes/NO-EXISTE/export.pdf"), admin, null).andExpect(status().isNotFound());
+
         con(post("/api/v1/admin/lotes"), usuario(), "{\"cantidad\":1}").andExpect(status().isForbidden());
+        con(get("/api/v1/admin/lotes/" + nombre + "/placas"), usuario(), null).andExpect(status().isForbidden());
     }
 
     @Test

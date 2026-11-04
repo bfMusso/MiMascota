@@ -39,6 +39,9 @@ public class Mascota {
 
     private String color;
 
+    /** null = sin indicar. */
+    private Boolean castrada;
+
     private String foto;
 
     @Column(name = "info_medica")
@@ -67,12 +70,13 @@ public class Mascota {
     }
 
     public void actualizar(String nombre, Especie especie, String raza, Sexo sexo, LocalDate fechaNacimiento,
-                           String color, String infoMedica, String observaciones) {
+                           Boolean castrada, String color, String infoMedica, String observaciones) {
         this.nombre = nombre.trim();
         this.especie = especie;
         this.raza = limpio(raza);
         this.sexo = sexo;
         this.fechaNacimiento = fechaNacimiento;
+        this.castrada = castrada;
         this.color = limpio(color);
         this.infoMedica = limpio(infoMedica);
         this.observaciones = limpio(observaciones);
@@ -126,6 +130,10 @@ public class Mascota {
 
     public String getColor() {
         return color;
+    }
+
+    public Boolean getCastrada() {
+        return castrada;
     }
 
     public String getFoto() {

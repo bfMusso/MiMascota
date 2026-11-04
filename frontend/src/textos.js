@@ -9,12 +9,18 @@ export const CAMPOS_PUBLICOS = [
   ['FOTO', 'Foto'],
   ['RAZA', 'Raza'],
   ['COLOR', 'Color'],
-  ['SEXO', 'Sexo'],
+  ['SEXO', 'Sexo y si está castrado/a'],
   ['EDAD', 'Edad'],
   ['INFO_MEDICA', 'Información médica'],
   ['OBSERVACIONES', 'Observaciones'],
   ['CONTACTO', 'Tu teléfono'],
 ]
+
+/** "Castrado", "Castrada" o "Castrado/a" según el sexo. Con `pregunta`, para la etiqueta del campo. */
+export function castradaTexto(sexo, pregunta = false) {
+  const palabra = sexo === 'MACHO' ? 'castrado' : sexo === 'HEMBRA' ? 'castrada' : 'castrado/a'
+  return pregunta ? `¿Está ${palabra}?` : palabra[0].toUpperCase() + palabra.slice(1)
+}
 
 /** "3 años", "8 meses" o "" a partir de la fecha de nacimiento (AAAA-MM-DD). */
 export function edad(fecha) {
@@ -41,6 +47,7 @@ export function aRequest(m, cambios = {}) {
     especie: m.especie,
     raza: m.raza || '',
     sexo: m.sexo || null,
+    castrada: m.castrada ?? null,
     fechaNacimiento: m.fechaNacimiento || null,
     color: m.color || '',
     infoMedica: m.infoMedica || '',

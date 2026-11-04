@@ -25,6 +25,7 @@ public final class MascotaDtos {
             @Size(max = 60) String raza,
             Sexo sexo,
             @PastOrPresent(message = "no puede ser una fecha futura") LocalDate fechaNacimiento,
+            Boolean castrada,
             @Size(max = 60) String color,
             @Size(max = 1000) String infoMedica,
             @Size(max = 1000) String observaciones,
@@ -39,6 +40,7 @@ public final class MascotaDtos {
             String raza,
             Sexo sexo,
             LocalDate fechaNacimiento,
+            Boolean castrada,
             String color,
             String fotoUrl,
             String infoMedica,
@@ -50,7 +52,7 @@ public final class MascotaDtos {
 
         static MascotaDto de(Mascota m, RolMascota rol, List<String> placas) {
             return new MascotaDto(m.getId(), m.getNombre(), m.getEspecie(), m.getRaza(), m.getSexo(),
-                    m.getFechaNacimiento(), m.getColor(), m.getFoto() == null ? null : "/fotos/" + m.getFoto(),
+                    m.getFechaNacimiento(), m.getCastrada(), m.getColor(), m.getFoto() == null ? null : "/fotos/" + m.getFoto(),
                     m.getInfoMedica(), m.getObservaciones(), m.isPerdida(), m.getCamposPublicos(), rol, placas);
         }
     }

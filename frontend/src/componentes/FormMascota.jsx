@@ -1,5 +1,5 @@
 import Campo from './Campo.jsx'
-import { ESPECIES, SEXOS } from '../textos.js'
+import { ESPECIES, SEXOS, castradaTexto } from '../textos.js'
 
 export const MASCOTA_VACIA = {
   nombre: '',
@@ -7,6 +7,7 @@ export const MASCOTA_VACIA = {
   raza: '',
   color: '',
   sexo: '',
+  castrada: '',
   fechaNacimiento: '',
   infoMedica: '',
   observaciones: '',
@@ -20,6 +21,7 @@ export function datosMascota(v) {
     raza: v.raza,
     color: v.color,
     sexo: v.sexo || null,
+    castrada: v.castrada === '' || v.castrada == null ? null : v.castrada === 'true',
     fechaNacimiento: v.fechaNacimiento || null,
     infoMedica: v.infoMedica,
     observaciones: v.observaciones,
@@ -57,9 +59,14 @@ export default function FormMascota({ valores, cambiar, campos = {}, completo = 
                 </option>
               ))}
             </Campo>
-            <Campo etiqueta="Fecha de nacimiento" type="date" max={hoy()} ayuda="Aproximada está bien."
-              {...props('fechaNacimiento')} />
+            <Campo etiqueta={castradaTexto(valores.sexo, true)} como="select" {...props('castrada')}>
+              <option value="">Sin indicar</option>
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </Campo>
           </div>
+          <Campo etiqueta="Fecha de nacimiento" type="date" max={hoy()} ayuda="Aproximada está bien."
+            {...props('fechaNacimiento')} />
           <Campo etiqueta="Información médica" como="textarea" rows={3} maxLength={1000}
             placeholder="Alergias, medicación, si está castrado…" {...props('infoMedica')} />
           <Campo etiqueta="Observaciones" como="textarea" rows={3} maxLength={1000}

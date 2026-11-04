@@ -691,48 +691,116 @@ a:hover {
 
 /* --- Admin --- */
 
-.tabla-envoltura {
-  overflow-x: auto;
+.lotes {
+  display: flex;
+  flex-direction: column;
 }
 
-table.tabla {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
+.lote {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0;
+  border-top: 1px solid var(--linea);
 }
 
-.tabla th,
-.tabla td {
-  text-align: left;
-  padding: 9px 8px;
-  border-bottom: 1px solid var(--linea);
-  white-space: nowrap;
+.lote:first-child {
+  border-top: 0;
+  padding-top: 0;
 }
 
-.tabla th {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.lote-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lote-cabecera > div:first-child {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.lote h3 {
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.codigos-lote {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radio);
+  background: var(--fondo);
+}
+
+.filtros {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filtro {
+  font: 700 0.85rem var(--fuente);
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--linea);
+  background: var(--tarjeta);
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.filtro span {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.filtro.activo {
+  border-color: var(--principal);
+  background: var(--lila-suave);
+  color: var(--principal);
+}
+
+.grilla-codigos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 8px;
+}
+
+.ficha-codigo {
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--linea);
+  background: var(--tarjeta);
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.ficha-codigo:hover {
+  border-color: var(--principal);
+}
+
+.ficha-codigo .estado {
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--texto-suave);
 }
 
-.tabla td.num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-.codigos {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.codigos span {
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: var(--lila-suave);
+.ficha-codigo.activa .estado {
   color: var(--principal);
-  font-size: 0.9rem;
+}
+
+.ficha-codigo.bloqueada {
+  opacity: 0.55;
 }

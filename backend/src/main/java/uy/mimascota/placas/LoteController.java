@@ -49,6 +49,9 @@ public class LoteController {
     public record LoteCreado(String lote, int cantidad, List<String> codigos) {
     }
 
+    public record PlacaLoteDto(String codigo, EstadoPlaca estado, String url, boolean conMascota) {
+    }
+
     public record LoteDto(String lote, java.time.OffsetDateTime fechaAlta, long total, long sinActivar, long activas,
                           long bloqueadas) {
     }
@@ -85,20 +88,49 @@ public class LoteController {
                 .toList();
     }
 
+    /** Placas del lote, para verlas en pantalla (un lote tiene como máximo 500). */
+    @GetMapping("/{lote}/placas")
+    @Transactional(readOnly = true)
+    public List<PlacaLoteDto> placasDelLote(@PathVariable String lote) {
+        return delLote(lote).stream()
+                .map(p -> new PlacaLoteDto(p.getCodigo(), p.getEstado(), url(p), p.getMascotaId() != null))
+                .toList();
+    }
+
+    /** PDF para imprimir: un QR por placa con su código. */
+    @GetMapping("/{lote}/export.pdf")
+    @Transactional(readOnly = true)
+    public ResponseEntity<byte[]> exportarPdf(@PathVariable String lote) {
+        byte[] pdf = LotePdf.generar(lote, delLote(lote), web.url());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + lote + ".pdf\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
     /** CSV con el código y la URL de cada placa, para generar los QR y grabar los NFC. */
     @GetMapping("/{lote}/export")
     @Transactional(readOnly = true)
     public ResponseEntity<byte[]> exportar(@PathVariable String lote) {
-        List<Placa> lista = placas.findByLoteOrderByCodigo(lote);
-        if (lista.isEmpty()) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "lote_no_encontrado", "No existe ese lote");
-        }
+        List<Placa> lista = delLote(lote);
         StringBuilder csv = new StringBuilder("codigo,url,estado\n");
-        lista.forEach(p -> csv.append(p.getCodigo()).append(',').append(web.url()).append("/p/").append(p.getCodigo())
+        lista.forEach(p -> csv.append(p.getCodigo()).append(',').append(url(p))
                 .append(',').append(p.getEstado()).append('\n'));
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + lote + ".csv\"")
                 .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
                 .body(csv.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private List<Placa> delLote(String lote) {
+        List<Placa> lista = placas.findByLoteOrderByCodigo(lote);
+        if (lista.isEmpty()) {
+            throw new ApiException(HttpStatus.NOT_FOUND, "lote_no_encontrado", "No existe ese lote");
+        }
+        return lista;
+    }
+
+    private String url(Placa p) {
+        return web.url() + "/p/" + p.getCodigo();
     }
 }

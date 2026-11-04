@@ -114,7 +114,8 @@ public class MascotaService {
     }
 
     private static void aplicar(Mascota m, MascotaRequest req) {
-        m.actualizar(req.nombre(), req.especie(), req.raza(), req.sexo(), req.fechaNacimiento(), req.color(),
+        m.actualizar(req.nombre(), req.especie(), req.raza(), req.sexo(), req.fechaNacimiento(), req.castrada(),
+                req.color(),
                 req.infoMedica(), req.observaciones());
         if (req.perdida() != null) {
             m.setPerdida(req.perdida());

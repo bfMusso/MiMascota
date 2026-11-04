@@ -71,7 +71,7 @@ Fotos servidas por Nginx en `/fotos/{archivo}` (en modo desarrollo las sirve el 
 
 Detalles de implementación (PR 06):
 
-- `especie`: `PERRO`, `GATO` u `OTRO`. `sexo`: `MACHO` o `HEMBRA`. `campos_publicos`: `FOTO`, `RAZA`, `COLOR`, `SEXO`, `EDAD`, `INFO_MEDICA`, `OBSERVACIONES`, `CONTACTO`.
+- `especie`: `PERRO`, `GATO` u `OTRO`. `sexo`: `MACHO` o `HEMBRA`. `castrada`: `true`, `false` o null (sin indicar; columna nueva en la migración V2); en la ficha pública va junto con `SEXO`. `campos_publicos`: `FOTO`, `RAZA`, `COLOR`, `SEXO`, `EDAD`, `INFO_MEDICA`, `OBSERVACIONES`, `CONTACTO`.
 - `PATCH /mascotas/{id}` recibe la ficha completa: un campo opcional vacío se borra; `perdida` y `camposPublicos` en null quedan como estaban.
 - Activar: `{ "mascotaId": "…" }` o `{ "mascota": { ficha nueva } }`, uno de los dos. Errores: `placa_no_encontrada` (404, también si está bloqueada), `placa_ya_activa` (409).
 - Foto: campo `foto` en multipart. Se guarda en JPG de 800 px de lado máximo. Error `foto_invalida`.
@@ -90,7 +90,7 @@ Detalles de implementación (PR 06):
 
 Códigos: 8 caracteres de un alfabeto sin ambiguos (sin 0/O ni 1/I/L), 31^8 ≈ 8,5 × 10^11 combinaciones. Al activar se acepta en minúsculas y con espacios o guiones.
 
-Hechos (PR 06): generar lote (`nombre` opcional; si falta, `LOTE-fecha-hora`), listado con conteos y export CSV (`codigo,url,estado`, con la URL armada desde `WEB_URL`). Faltan: placas del lote, detalle y bloqueo de una placa.
+Hechos (PR 06): generar lote (`nombre` opcional; si falta, `LOTE-fecha-hora`), listado con conteos, placas del lote (lista completa, sin paginar porque un lote tiene como máximo 500), export CSV (`codigo,url,estado`, con la URL armada desde `WEB_URL`) y `GET /admin/lotes/{lote}/export.pdf` (A4, un QR por placa con su código). Faltan: detalle y bloqueo de una placa.
 
 ## Cambios al modelo de datos
 

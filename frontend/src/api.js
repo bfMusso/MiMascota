@@ -120,5 +120,8 @@ export const placas = {
 export const admin = {
   lotes: () => conSesion('GET', '/admin/lotes'),
   crearLote: (cantidad, nombre) => conSesion('POST', '/admin/lotes', { cantidad, nombre: nombre || null }),
+  placasDeLote: (lote) => conSesion('GET', `/admin/lotes/${encodeURIComponent(lote)}/placas`),
+  exportarPdf: (lote) =>
+    conSesion('GET', `/admin/lotes/${encodeURIComponent(lote)}/export.pdf`, undefined, { archivo: true }),
   exportarLote: (lote) => conSesion('GET', `/admin/lotes/${encodeURIComponent(lote)}/export`, undefined, { archivo: true }),
 }

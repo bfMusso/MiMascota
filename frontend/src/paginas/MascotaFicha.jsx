@@ -8,7 +8,7 @@ import FormMascota, { datosMascota } from '../componentes/FormMascota.jsx'
 import { useCarga } from '../componentes/useCarga.js'
 import { useFormulario } from '../componentes/useFormulario.js'
 import { mascotas, placas } from '../api.js'
-import { CAMPOS_PUBLICOS, ESPECIES, aRequest, codigoLegible, edad } from '../textos.js'
+import { CAMPOS_PUBLICOS, ESPECIES, aRequest, castradaTexto, codigoLegible, edad } from '../textos.js'
 
 function Cabecera({ m, setM }) {
   const input = useRef(null)
@@ -39,7 +39,9 @@ function Cabecera({ m, setM }) {
     }
   }
 
-  const detalle = [ESPECIES[m.especie], m.raza, edad(m.fechaNacimiento)].filter(Boolean).join(' · ')
+  const detalle = [ESPECIES[m.especie], m.raza, edad(m.fechaNacimiento), m.castrada && castradaTexto(m.sexo)]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <div className="tarjeta">
@@ -109,6 +111,7 @@ function Datos({ m, setM }) {
     raza: m.raza || '',
     color: m.color || '',
     sexo: m.sexo || '',
+    castrada: m.castrada == null ? '' : String(m.castrada),
     fechaNacimiento: m.fechaNacimiento || '',
     infoMedica: m.infoMedica || '',
     observaciones: m.observaciones || '',
